@@ -1,0 +1,90 @@
+<% layout('layouts/bp') %>
+<body>
+
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Create a New Listing</h3>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="/listing" class="needs-validation" novalidate >
+              
+              <div class="mb-3">
+                <label for="title" class="form-label fw-semibold">Title</label>
+                <input type="text" 
+                       name="title" 
+                       id="title" 
+                       class="form-control" 
+                       placeholder="Enter title" 
+                       required>
+                <div class="invalid-feedback">Title should be there</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="description" class="form-label fw-semibold">Description</label>
+                <textarea name="description" 
+                          id="description" 
+                          class="form-control" 
+                          rows="4" 
+                          placeholder="Enter description" 
+                          required></textarea>
+                <div class="invalid-feedback">provide description</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="image" class="form-label fw-semibold">Image URL</label>
+                <input type="text" 
+                       name="image" 
+                       id="image" 
+                       class="form-control" 
+                       placeholder="https://example.com/image.jpg">
+                <!-- <div class="invalid-feedback">Title should be there</div> -->
+              </div>
+
+              <div class="mb-3">
+                <label for="price" class="form-label fw-semibold">Price (INR)</label>
+                <input 
+                       name="price" 
+                       id="price" 
+                       class="form-control" 
+                       placeholder="Enter price" 
+                       required>
+                <div class="invalid-feedback">Enter valid price</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="location" class="form-label fw-semibold">Location</label>
+                <input type="text" 
+                       name="location" 
+                       id="location" 
+                       class="form-control" 
+                       placeholder="Enter location" 
+                       required>
+                       <div class="invalid-feedback">Enter location</div>
+              </div>
+
+              <div class="mb-4">
+                <label for="country" class="form-label fw-semibold">Country</label>
+                <input type="text" 
+                       name="country" 
+                       id="country" 
+                       class="form-control" 
+                       placeholder="Enter country" 
+                       required>
+                       <div class="invalid-feedback">Enter country name</div>
+              </div>
+
+              <button type="submit" class="btn btn-success w-100">Create Listing</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="/js/script.js"></script>
+</body>
