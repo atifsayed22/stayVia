@@ -1,3 +1,10 @@
+if(process.env.NODE_ENV != "production"){
+
+    require('dotenv').config()
+
+}
+
+
 const express = require('express');
 const app = express();
 const mongoose = require("mongoose");
@@ -9,10 +16,12 @@ const listingRoutes = require('./routes/listingRoute.js')
 const reviewRoutes = require('./routes/reviewRoute.js')
 const userRoutes = require('./routes/userRoute.js')
 const session = require('express-session')
+const MongoStore = require('connect-mongo')
 const flash = require('connect-flash')
 const passport = require('passport')
 const localStrategy = require('passport-local')
 const User = require('./models/user.js')
+
 
 
 app.engine("ejs",ejsMate)
@@ -24,10 +33,25 @@ app.use(express.urlencoded({extended:true}))
 app.use(methodOveride('_method'))
 app.use(express.static(path.join(__dirname, "public")));
 
+
+const MongoURL = process.env.ATLASDB_URL
+
+
+
 // setting up session
 
+const store = MongoStore.create({
+    mongoUrl:MongoURL,
+    crypto:{
+        secret:process.env.SECRET,
+    },
+    touchAfter:24*3600,
+})
+
+
 const sessionOptions ={
-    secret:"mysecretkey",
+    store,
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie:{
@@ -35,6 +59,7 @@ const sessionOptions ={
         maxAge:7*24*60*60*1000
     }
 }
+
 app.use(session(sessionOptions))
 app.use(flash())
 
@@ -52,6 +77,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success")
     res.locals.error=req.flash("error")
+    res.locals.currStatus=req.user
     next()
 })
 
@@ -59,7 +85,8 @@ app.use((req,res,next)=>{
 
 
 // DB connection
-const MongoURL = 'mongodb://127.0.0.1:27017/stayvia';
+// const MongoURL = 'mongodb://127.0.0.1:27017/stayvia';
+
 
 main().then(() => {
     console.log("Connected to DB");

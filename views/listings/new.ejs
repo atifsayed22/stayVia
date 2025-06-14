@@ -9,7 +9,7 @@
             <h3 class="mb-0">Create a New Listing</h3>
           </div>
           <div class="card-body">
-            <form method="POST" action="/listing" class="needs-validation" novalidate >
+            <form method="POST" action="/listing" class="needs-validation" novalidate enctype="multipart/form-data" >
               
               <div class="mb-3">
                 <label for="title" class="form-label fw-semibold">Title</label>
@@ -32,15 +32,14 @@
                           required></textarea>
                 <div class="invalid-feedback">provide description</div>
               </div>
-
               <div class="mb-3">
                 <label for="image" class="form-label fw-semibold">Image URL</label>
-                <input type="text" 
-                       name="image" 
+                <input type="file" 
+                       name="listing[image]" 
                        id="image" 
                        class="form-control" 
                        placeholder="https://example.com/image.jpg">
-                <!-- <div class="invalid-feedback">Title should be there</div> -->
+
               </div>
 
               <div class="mb-3">
@@ -48,6 +47,7 @@
                 <input 
                        name="price" 
                        id="price" 
+                       type="number"
                        class="form-control" 
                        placeholder="Enter price" 
                        required>

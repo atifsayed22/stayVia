@@ -1,21 +1,25 @@
 const express = require('express');
-const router = express.Router()
-const wrapAsync = require('../utils/wrapAsyns.js')
-const User = require('../models/user.js')
+const router = express.Router();
+const passport = require('passport');
+const wrapAsync = require('../utils/wrapAsyns.js');
+const { saveRedirectUrl } = require('../middelware.js');
+const userController = require('../controller/user.js');
 
-router.get('/signup',(req,res)=>{
-    res.render("users/signup.ejs")
-})
-router.post('/signup', wrapAsync(async (req,res)=>{
-    let {username,email,password}=req.body
-    const newUser = new User({
-        email,username
-    })
-    const registeredUser = await User.register(newUser,password)
-    req.flash('success',"signup Successfull")
-    res.redirect('/listing')
-}))
+router.get('/signup', userController.renderSignup);
 
+router.post('/signup', wrapAsync(userController.signup));
 
+router.get('/login', userController.renderLogin);
 
-module.exports = router
+router.post('/login',
+    saveRedirectUrl,
+    passport.authenticate("local", {
+        failureFlash: true,
+        failureRedirect: "/login"
+    }),
+    userController.login
+);
+
+router.get('/logout', userController.logout);
+
+module.exports = router;

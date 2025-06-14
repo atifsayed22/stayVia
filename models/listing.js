@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Review = require('./review.js');
+const User = require('./user.js');
 const listingSchema = new mongoose.Schema({
     title:{
         type:String,
@@ -9,14 +10,8 @@ const listingSchema = new mongoose.Schema({
         type:String,
     },
     image: {
-        filename: String,
-        url: {
-          type: String,
-          set: (v) => v === "" 
-            ? "https://www.pexels.com/photo/white-and-brown-concrete-building-1571460/" 
-            : v,
-          default: "https://www.pexels.com/photo/white-and-brown-concrete-building-1571460/"
-        }
+         url: String,
+        filename: String
       },
       
     price:{
@@ -33,7 +28,11 @@ const listingSchema = new mongoose.Schema({
     reviews:[{
       type : mongoose.Schema.Types.ObjectId,
       ref:"Review"
-    }]
+    }],
+    owner:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"User"
+    }
 
 })
 listingSchema.post("findOneAndDelete",async(listing)=>{

@@ -1,0 +1,103 @@
+<style>
+  .category-bar a {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .category-bar a:hover {
+    color: #0d6efd;
+    transform: scale(1.05);
+  }
+
+  .category-active {
+    color: #0d6efd !important;
+    border-bottom: 2px solid #0d6efd;
+  }
+
+  /* Optional: Hide scrollbars on WebKit browsers */
+  .scrolling-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrolling-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<!-- Category Scroll Bar -->
+<div class="container-fluid py-3 bg-light border-bottom sticky-top" style="top: 56px; z-index: 1030;">
+  <div class="container scrolling-wrapper">
+    <div class="d-flex flex-nowrap gap-4 category-bar">
+
+      <!-- Category Item -->
+      <div class="text-center">
+        <a href="/listing/category/homes" class="text-decoration-none text-dark">
+          <i class="bi bi-house-door-fill fs-4 d-block mb-1"></i>
+          <small>Homes</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/nature" class="text-decoration-none text-dark">
+          <i class="bi bi-tree-fill fs-4 d-block mb-1"></i>
+          <small>Nature</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/beach" class="text-decoration-none text-dark">
+          <i class="bi bi-water fs-4 d-block mb-1"></i>
+          <small>Beach</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/arctic" class="text-decoration-none text-dark">
+          <i class="bi bi-snow fs-4 d-block mb-1"></i>
+          <small>Arctic</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/city" class="text-decoration-none text-dark">
+          <i class="bi bi-building fs-4 d-block mb-1"></i>
+          <small>City</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/food" class="text-decoration-none text-dark">
+          <i class="bi bi-cup-straw fs-4 d-block mb-1"></i>
+          <small>Food</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/landmarks" class="text-decoration-none text-dark">
+          <i class="bi bi-geo-alt-fill fs-4 d-block mb-1"></i>
+          <small>Landmarks</small>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <a href="/listing/category/luxury" class="text-decoration-none text-dark">
+          <i class="bi bi-stars fs-4 d-block mb-1"></i>
+          <small>Luxury</small>
+        </a>
+      </div>
+
+
+
+      <div class="text-center">
+        <a href="/listing/category/countryside" class="text-decoration-none text-dark">
+          <i class="bi bi-cloud-sun-fill fs-4 d-block mb-1"></i>
+          <small>Countryside</small>
+        </a>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
