@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to StayVia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: white;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    header {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #1a1a1a, #232323);
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #6366f1, #4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      margin: 1rem 0 2rem;
+      color: #ccc;
+      max-width: 600px;
+    }
+
+    .cta-btn {
+      background: #4f46e5;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    }
+
+    .cta-btn:hover {
+      background: #4338ca;
+      transform: translateY(-2px);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 4rem 2rem;
+      background-color: #111111;
+    }
+
+    .feature-box {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
+    }
+
+    .feature-box i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #6366f1;
+    }
+
+    .feature-box h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+
+    .feature-box p {
+      color: #aaa;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      background: #1a1a1a;
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Welcome to StayVia</h1>
+    <p>Your one-stop solution to manage, explore, and list amazing travel stays with ease and flexibility.</p>
+    <a href="/listing" class="cta-btn">Explore Listings</a>
+  </header>
+
+  <section class="features">
+    <div class="feature-box">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <h3>Discover Places</h3>
+      <p>Find unique places to stay anywhere in the world with tailored filters and options.</p>
+    </div>
+    <div class="feature-box">
+      <i class="fa-solid fa-upload"></i>
+      <h3>Easy Listing</h3>
+      <p>List your property in minutes with our intuitive, clean user interface.</p>
+    </div>
+    <div class="feature-box">
+      <i class="fa-solid fa-user-check"></i>
+      <h3>Manage Listings</h3>
+      <p>Track and edit your active listings at any time from your personalized dashboard.</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; <%= new Date().getFullYear() %> StayVia. All rights reserved.
+  </footer>
+</body>
+
+</html>

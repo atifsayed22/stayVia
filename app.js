@@ -126,7 +126,7 @@ app.use('/',userRoutes)
 
 // Root route
 app.get('/', (req, res) => {
-    res.redirect('/listing'); // or render a homepage if you prefer
+    res.render('home.ejs'); // or render a homepage if you prefer
 });
 
 // Error handling middlewere
