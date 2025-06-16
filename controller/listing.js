@@ -16,7 +16,13 @@ module.exports.index=async (req, res) => {
 
       
 
-    res.render("listings/index.ejs", { listings }); // ✅ FIXED
+    res.render("listings/index.ejs", { 
+        listings ,
+        search: '',          // default empty string
+        maxPrice: '',        // default empty string
+        minRating: ''        // default empty string
+
+    }); // ✅ FIXED
 }
 
 module.exports.show= async (req,res)=>{

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const initData = require('./data.js')
 const Listing = require('../models/listing.js')
 
-let MongoURL = 'mongodb://127.0.0.1:27017/stayvia'
+let MongoURL = 'mongodb+srv://sayedatif4321:sayedaatif%4022@cluster0.fahauhr.mongodb.net/stayViaDB?retryWrites=true&w=majority&appName=Cluster0'
 
 main().then((res)=>{
     console.log("connected to DB")
@@ -16,7 +16,7 @@ async function main(){
 
 const initDB = async ()=>{
     await Listing.deleteMany({})
-    initData.data=initData.data.map((obj)=>({...obj,owner:"68474a8df5a42c81320f65cc"}))
+    initData.data=initData.data.map((obj)=>({...obj,owner:"684de5ea9698deb81674a43c"}))
     await Listing.insertMany(initData.data)
     console.log(initData.data)
 }

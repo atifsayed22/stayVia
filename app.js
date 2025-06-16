@@ -80,7 +80,7 @@ app.use((req,res,next)=>{
     res.locals.error=req.flash("error")
     res.locals.currStatus=req.user
     res.locals.currentPath = req.path;
-    console.log(req.path)
+
     next()
 })
 
