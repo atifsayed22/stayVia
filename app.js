@@ -60,6 +60,7 @@ const sessionOptions ={
     }
 }
 
+  
 app.use(session(sessionOptions))
 app.use(flash())
 
@@ -78,6 +79,8 @@ app.use((req,res,next)=>{
     res.locals.success=req.flash("success")
     res.locals.error=req.flash("error")
     res.locals.currStatus=req.user
+    res.locals.currentPath = req.path;
+    console.log(req.path)
     next()
 })
 
@@ -121,6 +124,10 @@ app.use('/',userRoutes)
 
 
 
+// Root route
+app.get('/', (req, res) => {
+    res.redirect('/listing'); // or render a homepage if you prefer
+});
 
 // Error handling middlewere
 app.use((err,req,res,next)=>{

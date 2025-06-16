@@ -1,10 +1,67 @@
-.navbar{
+/* .navbar{
     height: 5rem;
-}
+} */
 .fa-compass{
     color: #fe424d;
     font-size: 2rem;
     margin-right: 5px;
 }
 
+  .category-bar a {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .category-bar a:hover {
+    color: #0d6efd;
+    transform: scale(1.05);
+  }
+
+  .category-active {
+    color: #0d6efd !important;
+    border-bottom: 2px solid #0d6efd;
+  }
+
+  /* Optional: Hide scrollbars on WebKit browsers */
+  .scrolling-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrolling-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-card {
+    border-radius: 10px;
+    background-color: white;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .custom-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .custom-card-img {
+    height: 140px;
+    object-fit: cover;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+  }
+  
+  @media (max-width: 576px) {
+    .custom-card-img {
+      height: 120px;
+    }
+  
+    .custom-card {
+      font-size: 0.9rem;
+    }
+  
+    .btn-sm {
+      font-size: 0.75rem;
+    }
+  }
+  
   

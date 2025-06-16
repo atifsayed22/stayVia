@@ -1,32 +1,13 @@
 <style>
-  .category-bar a {
-    transition: all 0.2s ease-in-out;
-  }
-
-  .category-bar a:hover {
-    color: #0d6efd;
-    transform: scale(1.05);
-  }
-
-  .category-active {
-    color: #0d6efd !important;
-    border-bottom: 2px solid #0d6efd;
-  }
-
-  /* Optional: Hide scrollbars on WebKit browsers */
-  .scrolling-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .scrolling-wrapper::-webkit-scrollbar {
-    display: none;
+  .mynav-width{
+    width: 100vw !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
   }
 </style>
 
 <!-- Category Scroll Bar -->
-<div class="container-fluid py-3 bg-light border-bottom sticky-top" style="top: 56px; z-index: 1030;">
+<div class="container-fluid mynav-width py-3 bg-light border-bottom sticky-top" style="top: 56px; z-index: 1030;">
   <div class="container scrolling-wrapper">
     <div class="d-flex flex-nowrap gap-4 category-bar">
 

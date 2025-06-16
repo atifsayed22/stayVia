@@ -20,6 +20,7 @@ router.get('/',wrapAsync( listingRoutes.index));
 router.get('/new', isLoggedIn,(req,res)=>{
     res.render("listings/new.ejs")
 })
+router.get('/my',isLoggedIn,wrapAsync(listingRoutes.mylistings))
 //route to show a particular listing in detail 
 router.get('/:id', wrapAsync(listingRoutes.show))
 //add new route

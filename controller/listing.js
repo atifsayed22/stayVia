@@ -1,7 +1,20 @@
 const Listing = require('../models/listing.js');
 
 module.exports.index=async (req, res) => {
-    const listings = await Listing.find();
+    const listings = await Listing.find().populate({
+        path:'reviews',
+        select:'rating'
+    });
+    listings.forEach(listing => {
+        if (listing.reviews.length > 0) {
+          const total = listing.reviews.reduce((acc, review) => acc + review.rating, 0);
+          listing.avgRating = (total / listing.reviews.length).toFixed(1);
+        } else {
+          listing.avgRating = null;
+        }
+      });
+
+      
 
     res.render("listings/index.ejs", { listings }); // ✅ FIXED
 }
@@ -67,4 +80,19 @@ module.exports.DeleteRoute=async (req,res)=>{
     req.flash("success"," listing deleted succesfully")
     res.redirect('/listing')
     
+}
+module.exports.mylistings=async(req,res)=>{
+    const listings = await Listing.find();
+
+    listings.forEach(listing => {
+        if (listing.reviews.length > 0) {
+          const total = listing.reviews.reduce((acc, review) => acc + review.rating, 0);
+          listing.avgRating = (total / listing.reviews.length).toFixed(1);
+        } else {
+          listing.avgRating = null;
+        }
+      });
+
+    res.render("listings/mylisting.ejs", { listings }); // ✅ FIXED
+
 }
