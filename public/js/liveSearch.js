@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const form = document.querySelector("#filter-form");
         const listingContainer = document.querySelector(".row.justify-content-center");
+
+        if (!form || !listingContainer) return;
         
         const debounce = (func, delay = 500) => {
           let timeout;

@@ -1,243 +1,193 @@
-<!-- navbar.ejs - Include file -->
 <style>
   * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
-  /* Navbar Styling */
-  .navbar {
-    background: #1a1a1a !important;
+  nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #1a1a1a;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    padding: 0.8rem 0;
+    z-index: 999;
+    padding: 0.8rem 1rem;
   }
 
-  .navbar.scrolled {
-    padding: 0.5rem 0;
+  nav.scrolled {
+    padding: 0.4rem 1rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
   }
 
-  /* Brand Styling */
-  .navbar-brand {
-    font-weight: 700;
+  .nav-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand {
     font-size: 1.4rem;
-    color: #fff !important;
+    font-weight: 700;
+    color: white;
     text-decoration: none;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .navbar-brand i {
-    font-size: 1.5rem;
+  .brand i {
     color: #4f46e5;
-    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
   }
 
-  .navbar-brand:hover {
-    color: #4f46e5 !important;
-    transform: translateY(-1px);
-  }
-
-  .navbar-brand:hover i {
-    color: #6366f1;
+  .brand:hover i {
     transform: rotate(180deg);
+    color: #6366f1;
   }
 
-  /* Nav Links */
-  .nav-link {
-    color: rgba(255, 255, 255, 0.8) !important;
-    font-weight: 500;
-    padding: 0.6rem 1rem !important;
-    border-radius: 8px;
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     transition: all 0.3s ease;
-    position: relative;
-    margin: 0 0.2rem;
   }
 
-  .nav-link:hover {
-    color: #fff !important;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+  .nav-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
   }
 
-  /* Left side nav links */
-  .navbar-nav.me-auto .nav-link {
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    padding-bottom: 0.5rem !important;
+  .nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
   }
 
-  .navbar-nav.me-auto .active-link {
-    border-bottom-color: #4f46e5;
-    background: transparent;
+  .nav-links .active-link {
+    border-bottom: 2px solid #4f46e5;
+    color: white;
   }
 
-  /* Right side buttons */
-  .navbar-nav.ms-auto .nav-link {
-    font-weight: 600;
-    margin: 0 0.3rem;
-  }
-
-  /* Sign Up Button */
-  .nav-link.btn-signup {
-    background: #4f46e5;
-    color: #fff !important;
-    padding: 0.6rem 1.5rem !important;
-  }
-
-  .nav-link.btn-signup:hover {
-    background: #4338ca;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  }
-
-  /* Login Button */
-  .nav-link.btn-login {
+  .btn-login {
     border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff !important;
-    padding: 0.6rem 1.5rem !important;
+    color: white;
   }
 
-  .nav-link.btn-login:hover {
+  .btn-login:hover {
     border-color: #4f46e5;
     background: rgba(79, 70, 229, 0.1);
   }
-  
-/* Active Link Styling */
-/* .active-link {
-  
-  border-bottom: 2px solid #4f46e5;
-  background: transparent;
-} */
 
-  /* Logout Button */
-  .nav-link.btn-logout {
-    background: #dc2626;
-    color: #fff !important;
-    padding: 0.6rem 1.5rem !important;
+  .btn-signup {
+    background: #4f46e5;
+    color: white;
   }
 
-  .nav-link.btn-logout:hover {
+  .btn-signup:hover {
+    background: #4338ca;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  }
+
+  .btn-logout {
+    background: #dc2626;
+    color: white;
+  }
+
+  .btn-logout:hover {
     background: #b91c1c;
-    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
   }
 
-  /* Hamburger Menu */
-  .navbar-toggler {
-    border: none;
-    padding: 0.4rem;
-    border-radius: 6px;
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+  }
+
+  .hamburger div {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
     transition: all 0.3s ease;
   }
 
-  .navbar-toggler:focus {
-    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
-  }
-
-  .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-  }
-
-  /* Mobile Menu */
   @media (max-width: 768px) {
-    .navbar-collapse {
-      max-height: 90vh;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.95);
-      border-radius: 10px;
-      margin-top: 1rem;
-      padding: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .nav-links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #1a1a1a;
+      flex-direction: column;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
     }
 
-    .nav-link {
-      margin: 0.2rem 0;
-      text-align: center;
-      border-radius: 8px !important;
+    .nav-links.show {
+      max-height: 400px;
+      opacity: 1;
     }
 
-    .navbar-nav.me-auto .nav-link {
-      border-bottom: none;
-      padding: 0.8rem 1rem !important;
+    .hamburger {
+      display: flex;
     }
-
-    .navbar-nav.me-auto .nav-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-  }
-
-  .navbar-collapse {
-    transition: max-height 0.3s ease;
-  }
-
-  /* Container improvements */
-  .container-fluid {
-    max-width: 1200px;
-    margin: 0 auto;
   }
 </style>
 
-<nav class="navbar navbar-expand-md navbar-dark sticky-top">
-  <div class="container-fluid">
+<nav id="navbar">
+  <div class="nav-container">
     <!-- Brand -->
-    <a class="navbar-brand" href="/">
+    <a href="/" class="brand">
       <i class="fa-solid fa-compass"></i> StayVia
     </a>
 
-    <!-- Hamburger Button -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-      aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Hamburger -->
+    <div class="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
 
-    <!-- Collapsible Menu -->
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Left Side -->
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link <%= currentPath.startsWith('/listing') && currentPath === '/listing' ? 'active-link' : '' %>" href="/listing">All Listings</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <%= currentPath === '/listing/new' ? 'active-link' : '' %>" href="/listing/new">Add New Listing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link <%= currentPath === '/listing/my' ? 'active-link' : '' %>" href="/listing/my">My Listings</a>
-        </li>
-      </ul>
+    <!-- Nav Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="/listing" class="<%= currentPath === '/listing' ? 'active-link' : '' %>">All Listings</a>
+      <a href="/listing/new" class="<%= currentPath === '/listing/new' ? 'active-link' : '' %>">Add New Listing</a>
+      <a href="/listing/my" class="<%= currentPath === '/listing/my' ? 'active-link' : '' %>">My Listings</a>
 
-      <!-- Right Side -->
-      <ul class="navbar-nav ms-auto">
-        <% if (!currStatus) { %>
-          <li class="nav-item">
-            <a class="nav-link btn-signup" href="/signup">Sign Up</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn-login" href="/login">Login</a>
-          </li>
-        <% } else { %>
-          <li class="nav-item">
-            <a class="nav-link btn-logout" href="/logout">Logout</a>
-          </li>
-        <% } %>
-      </ul>
+      <% if (!currStatus) { %>
+        <a class="btn-signup" href="/signup">Sign Up</a>
+        <a class="btn-login" href="/login">Login</a>
+      <% } else { %>
+        <a class="btn-logout" href="/logout">Logout</a>
+      <% } %>
     </div>
   </div>
 </nav>
 
 <script>
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
-    }
+  const navbar = document.getElementById('navbar');
+  const navLinks = document.getElementById('navLinks');
+
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
   });
+
+  function toggleMenu() {
+    navLinks.classList.toggle('show');
+  }
 </script>
