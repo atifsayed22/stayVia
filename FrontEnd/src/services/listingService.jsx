@@ -10,10 +10,19 @@ const getListings = async () => {
 //     return response 
 // }
 
-const addListing = async(listingData) =>{
-    const response = await API.post("/listing", listingData);
-    return response.data;
-}
+const createListing = async (formData) => {
+  const { data } = await API.post(
+    "/listing",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return data;
+};
 
 
 const getListingById = async (listingId) => {
@@ -25,7 +34,7 @@ const getListingById = async (listingId) => {
 const listingService = {
     getListings,
     getListingById ,
-    addListing
+    createListing,
 };
 
 export default listingService;

@@ -16,7 +16,7 @@ export default function AppRouter() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
-        {/* <Route path="host/dashboard" element={<HostDashboardPage />} /> */}
+        
         <Route path="listings" element={<ListingsPage />} />
         <Route
           path="listings/new"

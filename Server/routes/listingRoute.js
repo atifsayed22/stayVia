@@ -20,14 +20,14 @@ router.get("/:id", wrapAsync(listing.getListingById));
 router.post(
   "/",
   protect,
-  upload.single("images"),
+  upload.array("images", 10),
   wrapAsync(listing.createListing)
 );
 
 router.put(
   "/:id",
   protect,
-  upload.single("images"),
+  upload.array("images" , 10),
   wrapAsync(listing.updateListing)
 );
 

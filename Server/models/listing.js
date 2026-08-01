@@ -47,6 +47,10 @@ const listingSchema = new mongoose.Schema(
     // Location
     // ==========================
     address: {
+      street: {
+        type: String,
+        trim: true,
+      },
       city: {
         type: String,
         required: true,
@@ -76,6 +80,10 @@ const listingSchema = new mongoose.Schema(
       coordinates: {
         type: [Number],
         default: [0, 0], // [longitude, latitude]
+      },
+      postalCode: {
+        type: String,
+        trim: true,
       },
     },
 

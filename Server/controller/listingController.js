@@ -20,7 +20,7 @@ module.exports.getListingById = async (req, res) => {
 
   const listing = await Listing.findById(id).populate(
     "owner",
-    "username email"
+    "username email",
   );
 
   if (!listing) {
@@ -59,11 +59,15 @@ module.exports.createListing = async (req, res) => {
     owner: req.user._id,
   });
 
-  if (req.file) {
-    listing.images.push({
-      url: req.file.path,
-      filename: req.file.filename,
-    });
+  console.log("created listing data" , listing) ; 
+
+  if (req.files && req.files.length > 0) {
+    listing.images = req.files.map((file) => ({
+      url: file.path,
+      filename: file.filename,
+    }));
+
+    console.log("created listing data with images" ) ;
   }
 
   await listing.save();
