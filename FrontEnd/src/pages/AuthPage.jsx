@@ -1,6 +1,50 @@
-import { Link } from 'react-router-dom'
+import { Link  , useNavigate } from 'react-router-dom'
+import {useState} from 'react'
+import { useAuth } from '../hooks/useAuth'
+
+
+
+
 
 export default function AuthPage({ mode }) {
+  const navigate = useNavigate();
+  const { signup, login } = useAuth()
+  const [formData, setFormData] = useState({
+    email: '',
+    username: '',
+    password: '',
+  
+  })
+  const handleChange = (e) =>{
+    const {name , value} = e.target
+    setFormData((prev)=>({
+      ...prev , 
+      [name]: value
+    }))
+
+  }
+  const handleSubmit = async (e)=>{
+    e.preventDefault()
+    try {
+        if (isLogin) {
+
+          // Log the form data for debugging
+
+          console.log("Form Data:", formData);
+            await login({
+                username: formData.username,
+                password: formData.password,
+            });
+        } else {
+            await signup(formData);
+        }
+        navigate('/');
+        console.log("Success");
+    } catch (error) {
+        console.error(error);
+        
+    }
+  }
   const isLogin = mode === 'login'
   const title = isLogin ? 'Welcome back' : 'Create your account'
   const subtitle = isLogin
@@ -27,30 +71,27 @@ export default function AuthPage({ mode }) {
       </div>
 
       <div className="rounded-[2rem] bg-white p-8 shadow-sm">
-        <form className="grid gap-5">
+        <form onSubmit={handleSubmit} type="submit" className="grid gap-5">
           {!isLogin ? (
             <label className="grid gap-2">
               <span className="text-sm font-medium text-slate-700">Email</span>
-              <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="you@example.com" />
+              <input name="email" value={formData.email} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="you@example.com" />
             </label>
           ) : null}
 
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700">Username</span>
-            <input className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="Enter username" />
+            <input name="username" value={formData.username} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="Enter username" />
           </label>
 
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700">Password</span>
-            <input type="password" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="Enter password" />
+            <input  type="password" name='password' value={formData.password} onChange={handleChange} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-slate-400" placeholder="Enter password" />
           </label>
 
-          <label className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-slate-300" />
-            <span className="text-sm text-slate-700">Allow both traveler and host access</span>
-          </label>
+          
 
-          <button type="button" className="rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700">
+          <button type="submit" className="rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700">
             {isLogin ? 'Log in' : 'Create account'}
           </button>
 

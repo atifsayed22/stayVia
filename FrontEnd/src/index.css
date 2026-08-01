@@ -9,18 +9,18 @@
 html {
   scroll-behavior: smooth;
 }
-
+/* 
 body {
   margin: 0;
   min-width: 320px;
   background: #f7f7f7;
   color: #0f172a;
-}
+} */
 
-a {
+/* a {
   color: inherit;
   text-decoration: none;
-}
+} */
 
 img {
   display: block;
@@ -28,4 +28,4 @@ img {
 
 * {
   box-sizing: border-box;
-}
+} 

@@ -1,7 +1,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
-export async function fetchListings() {
-  const response = await fetch(`${API_BASE_URL}/listing`)
+async function fetchJsonOrThrow(url) {
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+    },
+  })
   const contentType = response.headers.get('content-type') || ''
 
   if (!contentType.includes('application/json')) {
@@ -13,4 +17,12 @@ export async function fetchListings() {
   }
 
   return response.json()
+}
+
+export function fetchListings() {
+  return fetchJsonOrThrow(`${API_BASE_URL}/listing`)
+}
+
+export function fetchListingById(id) {
+  return fetchJsonOrThrow(`${API_BASE_URL}/listing/${id}`)
 }

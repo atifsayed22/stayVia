@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom'
 import { buildStars, formatPrice } from '../../utils/listingUtils'
 
 export default function ListingCard({ listing }) {
+  console.log(listing.images[0])
   return (
     <Link to={`/listings/${listing._id}`} className="group block">
       <article className="overflow-hidden rounded-[1.75rem] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
         <div className="relative">
-          <img src={listing.imageUrl} alt={listing.title} className="h-72 w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+          <img src={listing.images[0]?.url} alt={listing.title} className="w-34 w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
           <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 shadow-sm backdrop-blur">
             {listing.category || 'Stay'}
           </div>

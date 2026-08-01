@@ -1,138 +1,77 @@
-if(process.env.NODE_ENV != "production"){
-
-    require('dotenv').config()
-
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
+const express = require("express");
 
-const express = require('express');
+const connectDB = require("./config/db");
+const listingRoutes = require("./routes/listingRoute");
+const reviewRoutes = require("./routes/reviewRoute");
+const userRoutes = require("./routes/userRoute");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
 const app = express();
-const mongoose = require("mongoose");
-const path = require('path');
-const methodOveride = require('method-override')
-const ejsMate = require('ejs-mate')
-const{reviewSchema}=require('./schema.js')
-const listingRoutes = require('./routes/listingRoute.js')
-const reviewRoutes = require('./routes/reviewRoute.js')
-const userRoutes = require('./routes/userRoute.js')
-const session = require('express-session')
-const MongoStore = require('connect-mongo')
-const flash = require('connect-flash')
-const passport = require('passport')
-const localStrategy = require('passport-local')
-const User = require('./models/user.js')
 
+const PORT = process.env.PORT || 8080;
+const MONGO_URI = process.env.MONGO_URI;
 
+/* =========================
+   Middlewares
+========================= */
 
-app.engine("ejs",ejsMate)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+}))
+/* =========================
+   Routes
+========================= */
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "StayVia Backend Running",
+  });
+});
 
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs"); 
-app.use(express.urlencoded({extended:true}))
-app.use(methodOveride('_method'))
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/listing", listingRoutes);
+app.use("/listing/:id/review", reviewRoutes);
+app.use("/auth", userRoutes);
 
+/* =========================
+   Error Handler
+========================= */
 
-const MongoURL = process.env.ATLASDB_URL
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = err.message || "Internal Server Error";
 
+  res.status(status).json({
+    success: false,
+    message,
+  });
+});
 
+/* =========================
+   Start Server
+========================= */
 
-// setting up session
+async function start() {
+  try {
+    await connectDB(MONGO_URI);
 
-const store = MongoStore.create({
-    mongoUrl:MongoURL,
-    crypto:{
-        secret:process.env.SECRET,
-    },
-    touchAfter:24*3600,
-})
-
-
-const sessionOptions ={
-    store,
-    secret:process.env.SECRET,
-    resave:false,
-    saveUninitialized:true,
-    cookie:{
-        expires:Date.now()+7*24*60*60*1000,
-        maxAge:7*24*60*60*1000
-    }
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-  
-app.use(session(sessionOptions))
-app.use(flash())
+start();
 
-// setting up  passport 
-app.use(passport.initialize())
-app.use(passport.session())
-
-
-passport.use(new localStrategy(User.authenticate()))
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-
-app.use((req,res,next)=>{
-    res.locals.success=req.flash("success")
-    res.locals.error=req.flash("error")
-    res.locals.currStatus=req.user
-    res.locals.currentPath = req.path;
-
-    next()
-})
-
-
-
-
-// DB connection
-// const MongoURL = 'mongodb://127.0.0.1:27017/stayvia';
-
-
-main().then(() => {
-    console.log("Connected to DB");
-}).catch(err => {
-    console.log(err);
-});
-async function main() {
-    await mongoose.connect(MongoURL);
-}
-
-const port = 8080;
-app.listen(port, () => {
-    console.log("Listening on port", port);
-});
-
-
-// demo user
-
-// app.get('/demouser',async(req,res)=>{
-//     let demouser = new User({
-//         email:"sayedatif4321@gmai.com",
-//         username:"atifsayed222"
-//     })
-//     let registeredUser = await User.register(demouser,"1234")
-//     res.send(registeredUser.username)
-// })
-
-// listing,review,user routes
-app.use('/listing',listingRoutes)
-app.use('/listing/:id/review',reviewRoutes)
-app.use('/',userRoutes)
-
-
-
-// Root route
-app.get('/', (req, res) => {
-    res.render('home.ejs'); // or render a homepage if you prefer
-});
-
-// Error handling middlewere
-app.use((err,req,res,next)=>{
-    let {status=500,message="some error occrured"}=err
-    console.log("error middlewere-1 activated")
-    // res.status(status).send(message)
-    res.render('layouts/error.ejs',{err})
-})
+module.exports = app;

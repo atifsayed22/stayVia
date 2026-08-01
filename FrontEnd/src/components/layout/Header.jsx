@@ -1,44 +1,70 @@
-import { Link, NavLink } from 'react-router-dom'
-import { currentUser } from '../../data/siteData'
+import { useState } from "react";
 
-const navLinkClass = ({ isActive }) =>
-  [
-    'rounded-full px-4 py-2 text-sm font-medium transition',
-    isActive ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-  ].join(' ')
+import Logo from "../Header/Logo";
+import DesktopNav from "../Header/DesktopNav";
+import UserMenu from "../Header/UserMenu";
+import MobileMenu from "../Header/MobileMenu";
+
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Header() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const getNavLinkClass = ({ isActive }) =>
+    `rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+      isActive
+        ? "bg-rose-500 text-white shadow-sm"
+        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+    }`;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-black/5 bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-3 font-semibold tracking-tight text-slate-900">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-500 text-white shadow-lg shadow-rose-200">
-            S
-          </div>
-          <div>
-            <div className="text-lg leading-none">StayVia</div>
-            <div className="text-xs font-medium text-slate-500">Airbnb-style stay marketplace</div>
-          </div>
-        </Link>
+    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <Logo />
 
-        <nav className="hidden items-center gap-2 md:flex">
-          <NavLink to="/" className={navLinkClass} end>
-            Home
-          </NavLink>
-          <NavLink to="/listings" className={navLinkClass}>
-            Listings
-          </NavLink>
-          <NavLink to="/listings/new" className={navLinkClass}>
-            Host
-          </NavLink>
-        </nav>
+        <DesktopNav getNavLinkClass={getNavLinkClass} />
 
-        <div className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 md:flex">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span className="font-medium text-slate-900">@{currentUser.username}</span>
-          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs uppercase tracking-[0.14em] text-slate-500">{currentUser.role}</span>
-        </div>
+        <UserMenu />
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="rounded-xl p-2 text-slate-600 hover:bg-slate-50 md:hidden"
+          aria-label="Toggle menu"
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            {isOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
       </div>
+
+      <MobileMenu
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        isAuthenticated={isAuthenticated}
+        user={user}
+        getNavLinkClass={getNavLinkClass}
+        logout={logout}
+      />
     </header>
-  )
+  );
 }

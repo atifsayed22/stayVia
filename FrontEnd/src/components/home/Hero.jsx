@@ -59,28 +59,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="rounded-[2rem] border border-white/10 bg-white p-4 text-slate-900 shadow-2xl shadow-black/20">
-            <div className="overflow-hidden rounded-[1.5rem] bg-slate-100">
-              <img
-                src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
-                alt="Featured stay"
-                className="h-80 w-full object-cover"
-              />
-            </div>
-            <div className="p-5">
-              <p className="text-sm font-medium text-rose-500">Featured booking</p>
-              <h2 className="mt-1 text-xl font-semibold">Beachfront Villa Escape</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                A visual, calm card-first layout that matches the way people browse Airbnbs.
-              </p>
-              <div className="mt-5 flex items-center justify-between text-sm">
-                <span className="text-slate-500">From</span>
-                <span className="font-semibold text-slate-900">₹ 11,800 / night</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </section>
   )
