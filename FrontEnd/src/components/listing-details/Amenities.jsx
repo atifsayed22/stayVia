@@ -1,5 +1,6 @@
 export default function Amenities({ listing }) {
   const amenities = listing.amenities || [];
+  console.log("amenities :" , amenities)
 
   return (
     <section className="rounded-[2rem] bg-white p-6 shadow-sm">
@@ -21,7 +22,7 @@ export default function Amenities({ listing }) {
               <span className="text-xl">✓</span>
 
               <span className="font-medium text-slate-700">
-                {listing.propertyType}
+                {amenity}
               </span>
             </div>
           ))}

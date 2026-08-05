@@ -7,6 +7,9 @@ import AmenitiesSection from "../components/listing-form/AmenitiesSection";
 import HouseRulesSection from "../components/listing-form/HouseRulesSection";
 import ImageUploader from "../components/listing-form/ImageUploader";
 import listingService from "../services/listingService";
+// import listing from "../../../Server/models/listing";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const initialFormData = {
   title: "",
@@ -36,7 +39,8 @@ const initialFormData = {
 
   status: "published",
 
-  images: [],
+  existingImages: [],
+  newImages: [],
 };
 
 export default function ListingFormPage({ mode = "create" }) {
@@ -45,6 +49,54 @@ export default function ListingFormPage({ mode = "create" }) {
 
   const [formData, setFormData] = useState(initialFormData);
   const [ruleInput, setRuleInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchListingData = async () => {
+    try {
+      const response = await listingService.getListingById(id);
+      const listing = response.listing;
+
+      setFormData({
+        title: listing.title,
+        description: listing.description,
+
+        price: listing.price,
+
+        propertyType: listing.propertyType,
+        roomType: listing.roomType,
+
+        maxGuests: listing.maxGuests,
+        bedrooms: listing.bedrooms,
+        beds: listing.beds,
+        bathrooms: listing.bathrooms,
+
+        address: {
+          street: listing.address?.street || "",
+          city: listing.address?.city || "",
+          state: listing.address?.state || "",
+          country: listing.address?.country || "",
+          postalCode: listing.address?.postalCode || "",
+        },
+
+        amenities: listing.amenities || [],
+
+        houseRules: listing.houseRules || [],
+
+        status: listing.status,
+
+        existingImages: listing.images || [],
+        newImages: [],
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (mode === "edit") {
+      fetchListingData();
+    }
+  }, [id]);
 
   // -------------------------
   // Basic Input Change
@@ -93,16 +145,24 @@ export default function ListingFormPage({ mode = "create" }) {
 
     setFormData((prev) => ({
       ...prev,
-      images: [...prev.images, ...files],
+      newImages: [...prev.newImages, ...files],
     }));
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemoveExistingImage = (index) => {
     setFormData((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+      existingImages: prev.existingImages.filter((_, i) => i !== index),
     }));
   };
+
+  const handleRemoveNewImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      newImages: prev.newImages.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleAddRule = () => {
     const rule = ruleInput.trim();
 
@@ -178,7 +238,14 @@ export default function ListingFormPage({ mode = "create" }) {
     // Images
     // -------------------------
 
-    formData.images.forEach((image) => {
+    // Existing images (already on Cloudinary)
+    submitData.append(
+      "existingImages",
+      JSON.stringify(formData.existingImages),
+    );
+
+    // Newly uploaded images
+    formData.newImages.forEach((image) => {
       submitData.append("images", image);
     });
 
@@ -188,17 +255,32 @@ export default function ListingFormPage({ mode = "create" }) {
 
     submitData.append("status", formData.status);
 
-    // temporary
-    for (const pair of submitData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+   
 
     try {
-      await listingService.createListing(submitData);
+      setIsSubmitting(true);
+      if (mode === "create") {
+        console.log("id:" , id)
+        await toast.promise(listingService.createListing( submitData), {
+          loading: "Creating listing...",
+          success: "Listing Created successfully",
+          error: "Failed to failed listing",
+        });
+      } else {
+        console.log("id:" , id)
+        await toast.promise(listingService.updateListing(id, submitData), {
+          loading: "Updating listing...",
+          success: "Listing updated successfully",
+          error: "Failed to update listing",
+        });
+      }
 
       navigate("/host/listings");
     } catch (err) {
       console.error(err);
+     
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -206,6 +288,7 @@ export default function ListingFormPage({ mode = "create" }) {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="mb-8 text-3xl font-bold">
         {mode === "create" ? "Create Listing" : "Edit Listing"}
+
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -240,16 +323,30 @@ export default function ListingFormPage({ mode = "create" }) {
         {/* ImageUploader */}
 
         <ImageUploader
-          images={formData.images}
+          existingImages={formData.existingImages}
+          newImages={formData.newImages}
           handleImageChange={handleImageChange}
-          handleRemoveImage={handleRemoveImage}
+          handleRemoveExistingImage={handleRemoveExistingImage}
+          handleRemoveNewImage={handleRemoveNewImage}
         />
 
         <button
           type="submit"
-          className="rounded-xl bg-slate-900 px-6 py-3 text-white"
+          disabled={isSubmitting}
+          className={`rounded-xl px-6 py-3 text-white transition
+                ${
+                  isSubmitting
+                    ? "cursor-not-allowed bg-slate-400"
+                    : "bg-slate-900 hover:bg-slate-800"
+                }`}
         >
-          {mode === "create" ? "Create Listing" : "Update Listing"}
+          {isSubmitting
+            ? mode === "create"
+              ? "Creating..."
+              : "Updating..."
+            : mode === "create"
+              ? "Create Listing"
+              : "Update Listing"}
         </button>
       </form>
     </div>

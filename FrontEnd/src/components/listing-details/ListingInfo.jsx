@@ -39,10 +39,16 @@ export default function ListingInfo({ listing }) {
 
         <span className="rounded-full bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600">
           {/* {listing?.propertyType} */}
-        {  console.log("Listing property type:", listing.propertyType)}
+       <p className="text-xs uppercase tracking-wide text-slate-500">
+            Property Type 
+          </p>
+        {listing?.propertyType}
         </span>
 
-        <span className="rounded-full bg-slate-100 px-4 py-2 text-sm">
+        <span className="rounded-full bg-slate-100 font-semibold px-4 py-2  text-rose-600">
+       <p className="text-xs uppercase tracking-wide text-slate-500">
+            Room Type 
+          </p>
           {listing.roomType}
         </span>
 

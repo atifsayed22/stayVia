@@ -1,5 +1,5 @@
 import AppRouter from './routes/AppRouter'
-
+import {Toaster} from 'react-hot-toast'
 import {AuthProvider} from './context/AuthContext'
 
 export default function App() {
@@ -7,6 +7,7 @@ export default function App() {
     <AuthProvider>
       
         <AppRouter />
+        <Toaster  position="top-right"/>
       
     </AuthProvider>
   )

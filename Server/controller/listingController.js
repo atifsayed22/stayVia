@@ -54,12 +54,13 @@ module.exports.getMyListings = async (req, res) => {
 // Create Listing
 // ======================================
 module.exports.createListing = async (req, res) => {
+
   const listing = new Listing({
     ...req.body,
     owner: req.user._id,
   });
 
-  console.log("created listing data" , listing) ; 
+  console.log("created listing data", listing);
 
   if (req.files && req.files.length > 0) {
     listing.images = req.files.map((file) => ({
@@ -67,7 +68,7 @@ module.exports.createListing = async (req, res) => {
       filename: file.filename,
     }));
 
-    console.log("created listing data with images" ) ;
+    console.log("created listing data with images");
   }
 
   await listing.save();
@@ -101,14 +102,39 @@ module.exports.updateListing = async (req, res) => {
     });
   }
 
+  // -------------------------
+  // Update all normal fields
+  // -------------------------
+
   Object.assign(listing, req.body);
 
-  if (req.file) {
-    listing.images.push({
-      url: req.file.path,
-      filename: req.file.filename,
-    });
+  // -------------------------
+  // Existing Images
+  // -------------------------
+
+  let existingImages = [];
+
+  if (req.body.existingImages) {
+    existingImages = JSON.parse(req.body.existingImages);
   }
+
+  // -------------------------
+  // Newly Uploaded Images
+  // -------------------------
+
+  const newImages =
+    req.files && req.files.length > 0
+      ? req.files.map((file) => ({
+          url: file.path,
+          filename: file.filename,
+        }))
+      : [];
+
+  // -------------------------
+  // Final Images
+  // -------------------------
+
+  listing.images = [...existingImages, ...newImages];
 
   await listing.save();
 
