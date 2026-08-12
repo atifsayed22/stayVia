@@ -255,19 +255,22 @@ export default function ListingFormPage({ mode = "create" }) {
 
     submitData.append("status", formData.status);
 
-   
+    // DEBUG
+    for (const [key, value] of submitData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       setIsSubmitting(true);
       if (mode === "create") {
-        console.log("id:" , id)
-        await toast.promise(listingService.createListing( submitData), {
+        // console.log("id:", id);
+        await toast.promise(listingService.createListing(submitData), {
           loading: "Creating listing...",
           success: "Listing Created successfully",
           error: "Failed to failed listing",
         });
       } else {
-        console.log("id:" , id)
+        console.log("id:", id);
         await toast.promise(listingService.updateListing(id, submitData), {
           loading: "Updating listing...",
           success: "Listing updated successfully",
@@ -277,8 +280,9 @@ export default function ListingFormPage({ mode = "create" }) {
 
       navigate("/host/listings");
     } catch (err) {
-      console.error(err);
-     
+      console.error(
+      err.message || "Something went wrong",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -288,7 +292,6 @@ export default function ListingFormPage({ mode = "create" }) {
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="mb-8 text-3xl font-bold">
         {mode === "create" ? "Create Listing" : "Edit Listing"}
-
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">

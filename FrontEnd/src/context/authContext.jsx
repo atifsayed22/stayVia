@@ -7,6 +7,7 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const login = async (data) => {
     const user = await authService.login(data);
@@ -15,9 +16,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (data) => {
-    const user = await authService.signup(data);
+    try {
+      const user = await authService.signup(data);
 
-    setUser(user);
+      setUser(user);
+
+      return user
+    } catch (err) {
+      const message =  err?.response?.data?.message
+      console.log("Somme error in the signup ") ; 
+      console.log(message) ; 
+      setError(true) ;
+      throw err ; 
+     
+    }
   };
   const logout = async () => {
     await authService.logout();
@@ -28,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       const user = await authService.getCurrentUser();
-      
+
       setUser(user);
     } catch {
       setUser(null);
@@ -36,7 +48,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -48,6 +59,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         loading,
+        error,
         isAuthenticated: !!user,
         login,
         signup,

@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import AuthPage from "../pages/AuthPage";
 import HomePage from "../pages/HomePage";
-import HostDashboardPage from "../pages/HostDashboardPage";
+import HostDashboardPage from "../pages/Host/HostDashboardPage";
 import ListingDetailsPage from '../pages/ListingDetailsPage'
 import ListingFormPage from "../pages/ListingFormPage";
 import ListingsPage from "../pages/ListingsPage";
@@ -11,6 +11,7 @@ import HostLayout from "../components/layout/HostLayout";
 import HostListingsPage from "../pages/Host/HostListingsPage";
 import HostBookingsPage from "../pages/Host/HostBookingPage";
 import HostCalendarPage from "../pages/Host/HostCalendarPage";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 export default function AppRouter() {
   return (
     <Routes>
@@ -31,6 +32,9 @@ export default function AppRouter() {
         <Route path="signup" element={<AuthPage mode="signup" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
+      <Route element={<ProtectedRoute/>} > 
+
+
       <Route path="host" element={<HostLayout />}>
         <Route index element={<HostDashboardPage />} />
 
@@ -49,6 +53,7 @@ export default function AppRouter() {
         <Route path="bookings" element={<HostBookingsPage />} />
 
         <Route path="calendar" element={<HostCalendarPage />} />
+      </Route>
       </Route>
     </Routes>
   );

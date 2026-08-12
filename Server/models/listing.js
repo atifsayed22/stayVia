@@ -67,6 +67,10 @@ const listingSchema = new mongoose.Schema(
         required: true,
         trim: true,
       },
+      postalCode: {
+        type: String,
+        trim: true,
+      },
     },
 
     // Will be filled using Mapbox later
@@ -79,12 +83,9 @@ const listingSchema = new mongoose.Schema(
 
       coordinates: {
         type: [Number],
-        default: [0, 0], // [longitude, latitude]
+      
       },
-      postalCode: {
-        type: String,
-        trim: true,
-      },
+      
     },
 
     // ==========================

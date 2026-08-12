@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const geocodeAddress = require("../utils/geocode");
 
 // ======================================
 // Get All Listings
@@ -54,13 +55,27 @@ module.exports.getMyListings = async (req, res) => {
 // Create Listing
 // ======================================
 module.exports.createListing = async (req, res) => {
+  const location = await geocodeAddress(req.body.address);
+
+  if (!location) {
+    return res.status(400).json({
+      success: false,
+      message: "Unable to verify the provided address.",
+    });
+  }
 
   const listing = new Listing({
     ...req.body,
+
     owner: req.user._id,
+
+    geometry: {
+      type: "Point",
+      coordinates: location.coordinates,
+    },
   });
 
-  console.log("created listing data", listing);
+
 
   if (req.files && req.files.length > 0) {
     listing.images = req.files.map((file) => ({
@@ -102,15 +117,32 @@ module.exports.updateListing = async (req, res) => {
     });
   }
 
-  // -------------------------
-  // Update all normal fields
-  // -------------------------
+  const addressChanged =
+    req.body.address?.street !== listing.address?.street ||
+    req.body.address?.city !== listing.address?.city ||
+    req.body.address?.state !== listing.address?.state ||
+    req.body.address?.country !== listing.address?.country ||
+    req.body.address?.postalCode !== listing.address?.postalCode;
 
   Object.assign(listing, req.body);
 
-  // -------------------------
-  // Existing Images
-  // -------------------------
+  if (addressChanged) {
+    console.log("Addres Changed")
+    const location = await geocodeAddress(req.body.address);
+
+    if (!location) {
+      return res.status(400).json({
+        success: false,
+        message: "Unable to verify the provided address.",
+      });
+    }
+
+    listing.geometry = {
+      type: "Point",
+      coordinates: location.coordinates,
+    };
+  }
+
 
   let existingImages = [];
 

@@ -13,7 +13,7 @@ export function useHostListings() {
 
       const response = await listingService.getMyListings();
 
-      setListings(response.listings);
+      setListings(response.listings || []);
       setError("");
     } catch (err) {
       console.error(err);
@@ -24,13 +24,18 @@ export function useHostListings() {
   };
 
   const deleteListing = async (id) => {
-    await toast.promise(listingService.deleteListing(id), {
-      loading: "Deleting listing...",
-      success: "Listing deleted successfully",
-      error: "Failed to delete listing",
-    });
+    await toast.promise(
+      listingService.deleteListing(id),
+      {
+        loading: "Deleting listing...",
+        success: "Listing deleted successfully",
+        error: "Failed to delete listing",
+      }
+    );
 
-    setListings((prev) => prev.filter((listing) => listing._id !== id));
+    setListings((prev) =>
+      prev.filter((listing) => listing._id !== id)
+    );
   };
 
   useEffect(() => {
@@ -43,6 +48,5 @@ export function useHostListings() {
     error,
     fetchListings,
     deleteListing,
-
   };
 }
