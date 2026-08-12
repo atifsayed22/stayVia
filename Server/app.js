@@ -8,6 +8,7 @@ const connectDB = require("./config/db");
 const listingRoutes = require("./routes/listingRoute");
 const reviewRoutes = require("./routes/reviewRoute");
 const userRoutes = require("./routes/userRoute");
+const bookingRoutes = require('./routes/bookingRoutes')
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 app.use("/listing", listingRoutes);
 app.use("/listing/:id/review", reviewRoutes);
 app.use("/auth", userRoutes);
+app.use("/booking", bookingRoutes);
 
 /* =========================
    Error Handler

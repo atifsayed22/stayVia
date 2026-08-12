@@ -7,16 +7,17 @@ const geocodeAddress = require("../utils/geocode");
 
 
 const MONGO_URI = process.env.MONGO_URI;
+console.log("MONGO_URI: ", MONGO_URI);
 
 const HOST_ID = new mongoose.Types.ObjectId(
-  "6a6cbfe5978520aa6d8e0904"
+  "6a7c85ac5387f98a5b0bff6c"
 );
 
 
 
 const seedListings = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/stayvia");
+    await mongoose.connect(MONGO_URI);
 
     console.log("MongoDB connected");
 
