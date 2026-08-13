@@ -62,25 +62,14 @@ const bookingSchema = new mongoose.Schema(
     // Booking lifecycle
     status: {
       type: String,
-      enum: [
-        "pending",
-        "confirmed",
-        "cancelled",
-        "completed",
-        "expired",
-      ],
+      enum: ["pending", "confirmed", "cancelled", "completed", "expired"],
       default: "pending",
     },
 
     // Payment lifecycle
     paymentStatus: {
       type: String,
-      enum: [
-        "pending",
-        "paid",
-        "failed",
-        "refunded",
-      ],
+      enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
 
@@ -88,10 +77,19 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    razorpayOrderId: {
+      type: String,
+      default: null,
+    },
+
+    expiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Booking", bookingSchema);

@@ -1,6 +1,7 @@
 const Booking = require("../models/booking");
 const Listing = require("../models/listing");
 const ReservationSlot = require("../models/reservationSlot");
+const bookingQueue = require("../queues/bookingQueue");
 const mongoose = require("mongoose");
 
 module.exports.checkAvailability = async (req, res) => {
@@ -63,11 +64,7 @@ module.exports.checkAvailability = async (req, res) => {
 };
 
 module.exports.createBooking = async (req, res) => {
- 
   const { listingId, checkIn, checkOut, guests } = req.body;
-
-  console.log("Data : " , req.body) ; 
-  console.log(req)
 
   // 1 . validate required fields
   if (!listingId || !checkOut || !checkIn || !guests) {
@@ -119,16 +116,14 @@ module.exports.createBooking = async (req, res) => {
     }
   }
 
-
-
-   // -----------------------------------------
+  // -----------------------------------------
   // 5. Calculate nights
   // -----------------------------------------
 
   const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
   const nights = Math.ceil(
-    (requestedCheckOut - requestedCheckIn) / millisecondsPerDay
+    (requestedCheckOut - requestedCheckIn) / millisecondsPerDay,
   );
 
   // -----------------------------------------
@@ -155,6 +150,10 @@ module.exports.createBooking = async (req, res) => {
       // Create booking
       // -----------------------------------------
 
+      // create a expiration time for payment if the booking is not confirmed within 15 minutes
+
+      const expiresAt = new Date(Date.now() + 120 * 1000);
+
       const [booking] = await Booking.create(
         [
           {
@@ -173,9 +172,10 @@ module.exports.createBooking = async (req, res) => {
 
             status: "pending",
             paymentStatus: "pending",
+            expiresAt,
           },
         ],
-        { session }
+        { session },
       );
 
       // -----------------------------------------
@@ -208,6 +208,15 @@ module.exports.createBooking = async (req, res) => {
       createdBooking = booking;
     });
 
+    await bookingQueue.add(
+      "expire-booking",
+      {
+        bookingId: createdBooking._id.toString(),
+      },
+      {
+        delay: 120 * 1000,
+      },
+    );
     // -----------------------------------------
     // Transaction successful
     // -----------------------------------------
