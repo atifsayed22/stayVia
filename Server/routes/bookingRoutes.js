@@ -21,4 +21,6 @@ router.post(
   wrapAsync(payment.verifyPayment),
 );
 router.post("/:bookingId/payment", protect, wrapAsync(payment.createOrder));
+router.get("/user-bookings", protect, wrapAsync(booking.getUserBookings));
+router.get("/:bookingId", protect, wrapAsync(booking.getBookingById));
 module.exports = router;

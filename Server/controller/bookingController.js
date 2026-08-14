@@ -152,7 +152,7 @@ module.exports.createBooking = async (req, res) => {
 
       // create a expiration time for payment if the booking is not confirmed within 15 minutes
 
-      const expiresAt = new Date(Date.now() + 120 * 1000);
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
       const [booking] = await Booking.create(
         [
@@ -214,7 +214,7 @@ module.exports.createBooking = async (req, res) => {
         bookingId: createdBooking._id.toString(),
       },
       {
-        delay: 120 * 1000,
+        delay: 15 * 60 * 1000,
       },
     );
     // -----------------------------------------
@@ -243,3 +243,70 @@ module.exports.createBooking = async (req, res) => {
     await session.endSession();
   }
 };
+
+//Get all bookings for a user
+module.exports.getUserBookings = async (req, res) => {
+  const guest = req.user._id;
+
+  const bookings = await Booking.find({
+    guest,
+    paymentStatus: "paid",
+    status: {
+      $in: ["confirmed", "completed"],
+    },
+  })
+    .select(
+      "listing checkIn checkOut guests pricePerNight nights totalPrice status paymentStatus createdAt",
+    )
+    .populate("listing", "title images address")
+    .sort({ createdAt: -1 });
+
+  if (!bookings || bookings.length === 0) {
+    return res.status(404).json({
+      success: false,
+      message: "No bookings found for this user",
+    });
+  }
+
+  console.log("Total bookings found for user:", bookings.length);
+
+  return res.status(200).json({
+    success: true,
+    bookings,
+  });
+};
+
+// get a specific booking by id for a user 
+
+module.exports.getBookingById = async(req ,res) =>{
+  const { bookingId } = req.params;
+  const guest = req.user._id;
+
+  const booking  = await Booking.findOne({
+    _id: bookingId,
+    guest :  guest , 
+    status: {
+      $in: ["confirmed", "completed"],
+    },
+    paymentStatus: "paid",
+  })    .select(
+      "listing checkIn checkOut guests pricePerNight nights subtotal totalPrice status paymentStatus createdAt"
+    )
+    .populate(
+      "listing",
+      "title images address"
+    );
+
+
+    if( !booking){
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found ",
+      });
+    }
+
+    return res.status(200).json({
+      success: true , 
+      booking 
+    })
+}

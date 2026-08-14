@@ -117,6 +117,7 @@ export default function BookingCard({ listing }) {
 
         name: "StayVia",
         description: "Property Booking",
+        timeout: 15 * 60,
 
         order_id: order.id,
 

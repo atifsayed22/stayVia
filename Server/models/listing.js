@@ -83,9 +83,7 @@ const listingSchema = new mongoose.Schema(
 
       coordinates: {
         type: [Number],
-      
       },
-      
     },
 
     // ==========================
@@ -98,7 +96,10 @@ const listingSchema = new mongoose.Schema(
         "House",
         "Villa",
         "Cabin",
+        "Cottage",
         "Farmhouse",
+        "Holiday Home",
+        "Homestay",
         "Hotel",
         "Resort",
       ],
@@ -107,11 +108,7 @@ const listingSchema = new mongoose.Schema(
 
     roomType: {
       type: String,
-      enum: [
-        "Entire Place",
-        "Private Room",
-        "Shared Room",
-      ],
+      enum: ["Entire Place", "Private Room", "Shared Room"],
       default: "Entire Place",
     },
 
@@ -183,7 +180,7 @@ const listingSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 listingSchema.index({
