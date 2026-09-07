@@ -21,13 +21,12 @@ export default function AppRouter() {
         <Route index element={<HomePage />} />
 
         <Route path="listings" element={<ListingsPage />} />
+        <Route path="listings/:id" element={<ListingDetailsPage />} />
         <Route
           path="listings/new"
           element={<ListingFormPage mode="create" />}
         />
-        <Route path="myBookings" element={<MyBookings />} />
-        <Route path="/bookings/:bookingId" element={<BookingDetailsPage />} />
-        <Route path="listings/:id" element={<ListingDetailsPage />} />
+
         <Route
           path="listings/:id/edit"
           element={<ListingFormPage mode="edit" />}
@@ -36,6 +35,14 @@ export default function AppRouter() {
         <Route path="login" element={<AuthPage mode="login" />} />
         <Route path="signup" element={<AuthPage mode="signup" />} />
         <Route path="*" element={<NotFoundPage />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="bookings">
+            <Route index element={<MyBookings />} />
+            <Route path=":bookingId" element={<BookingDetailsPage />} />
+          </Route>
+        </Route>
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="host" element={<HostLayout />}>

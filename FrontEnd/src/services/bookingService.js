@@ -29,6 +29,11 @@ const getUserBookings = async ()=>{
   return response.data.bookings;
 }
 
+const getHostBookings = async () => {
+  const response = await API.get("/booking/host-bookings");
+  return response.data.bookings;
+};
+
 const getBookingById = async(bookingId) =>{
   const response = await API.get(`/booking/${bookingId}`);
   return response.data.booking;
@@ -38,5 +43,6 @@ export {
     checkAvailability,
     createBooking ,
     getUserBookings,
+    getHostBookings,
     getBookingById
 }

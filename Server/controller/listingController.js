@@ -1,5 +1,6 @@
 const Listing = require("../models/listing");
 const geocodeAddress = require("../utils/geocode");
+const mongoose = require("mongoose");
 
 // ======================================
 // Get All Listings
@@ -18,6 +19,14 @@ module.exports.getAllListings = async (req, res) => {
 // ======================================
 module.exports.getListingById = async (req, res) => {
   const { id } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+  return res.status(404).json({
+    success: false,
+    message: "Listing not found",
+  });
+}
+
 
   const listing = await Listing.findById(id).populate(
     "owner",

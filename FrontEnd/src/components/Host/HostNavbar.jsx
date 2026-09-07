@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "../Header/Logo";
-import UserMenu from "../header/UserMenu";
+import UserMenu from "../Header/UserMenu";
 import HostDesktopNav from "./HostDesktopNav";
 
 export default function HostNavbar() {
@@ -31,7 +31,7 @@ export default function HostNavbar() {
             + Add Listing
           </Link>
 
-          <UserMenu />
+          <UserMenu isHost />
         </div>
       </div>
     </header>

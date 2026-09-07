@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
-export default function UserMenu() {
+export default function UserMenu({ isHost = false }) {
   const { user, isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -84,28 +84,30 @@ export default function UserMenu() {
           </div>
 
           <nav className="flex flex-col py-2">
-            <Link
-              to="/host/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="px-4 py-3 text-sm hover:bg-slate-100"
-            >
-              Dashboard
-            </Link>
+            {isHost ? (
+              <Link
+                to="/"
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-3 text-sm hover:bg-slate-100"
+              >
+                Switch to traveler
+              </Link>
+            ) : (
+              <Link
+                to="/host"
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-3 text-sm hover:bg-slate-100"
+              >
+                Switch to hosting
+              </Link>
+            )}
 
             <Link
-              to="/my-listings"
+              to="/bookings"
               onClick={() => setIsOpen(false)}
               className="px-4 py-3 text-sm hover:bg-slate-100"
             >
-              My Listings
-            </Link>
-
-            <Link
-              to="/profile"
-              onClick={() => setIsOpen(false)}
-              className="px-4 py-3 text-sm hover:bg-slate-100"
-            >
-              Profile
+              My bookings
             </Link>
           </nav>
 

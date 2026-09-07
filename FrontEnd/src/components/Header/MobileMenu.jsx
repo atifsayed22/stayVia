@@ -39,13 +39,6 @@ export default function MobileMenu({
           Listings
         </NavLink>
 
-        <Link
-          to="/host/dashboard"
-          onClick={() => setIsOpen(false)}
-          className="rounded-full bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-slate-700"
-        >
-          Become a Host
-        </Link>
       </nav>
 
       <div className="mt-6 border-t border-slate-100 pt-4">
@@ -65,11 +58,19 @@ export default function MobileMenu({
 
             <div className="mt-4 flex flex-col gap-2">
               <Link
-                to="/profile"
+                to="/host"
+                onClick={() => setIsOpen(false)}
+                className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white"
+              >
+                Switch to hosting
+              </Link>
+
+              <Link
+                to="/bookings"
                 onClick={() => setIsOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm hover:bg-slate-100"
               >
-                Profile
+                My bookings
               </Link>
 
               <button

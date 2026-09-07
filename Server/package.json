@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": "node app.js",
+    "worker": "node workers/bookingWorker.js"
+  },
   "engines": {
     "node": "22.12.0"
   },

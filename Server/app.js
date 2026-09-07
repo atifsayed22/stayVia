@@ -9,6 +9,8 @@ const listingRoutes = require("./routes/listingRoute");
 const reviewRoutes = require("./routes/reviewRoute");
 const userRoutes = require("./routes/userRoute");
 const bookingRoutes = require('./routes/bookingRoutes')
+const paymentController = require("./controller/paymentController");
+const wrapAsync = require("./utils/wrapAsync");
 
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -17,6 +19,12 @@ const app = express();
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = process.env.MONGO_URI;
+
+app.post(
+  "/payment/webhook",
+  express.raw({ type: "application/json" }),
+  wrapAsync(paymentController.handleWebhook),
+);
 
 /* =========================
    Middlewares

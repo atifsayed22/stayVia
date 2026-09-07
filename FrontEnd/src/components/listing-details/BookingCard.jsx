@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { formatPrice } from "../../utils/listingUtils";
 
 import toast from "react-hot-toast";
@@ -12,6 +13,7 @@ import {
 } from "../../services/paymentService";
 
 export default function BookingCard({ listing }) {
+  const navigate = useNavigate();
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
@@ -99,15 +101,14 @@ export default function BookingCard({ listing }) {
 
       const bookingId = data.booking._id;
 
-      console.log("Booking created successfully:", data);
-
-      toast.success("Booking created Succesfully ");
-
-      // For now, just verify the booking was created.
       const paymentData = await createPaymentOrder(bookingId);
-
-      // Payment will be connected in the next step.
       const order = paymentData.order;
+      const remainingSeconds = Math.max(
+        1,
+        Math.floor((new Date(paymentData.expiresAt).getTime() - Date.now()) / 1000),
+      );
+
+      toast.success("Your dates are temporarily reserved. Complete payment to confirm.");
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -117,7 +118,7 @@ export default function BookingCard({ listing }) {
 
         name: "StayVia",
         description: "Property Booking",
-        timeout: 15 * 60,
+        timeout: remainingSeconds,
 
         order_id: order.id,
 
@@ -125,14 +126,15 @@ export default function BookingCard({ listing }) {
           try {
             console.log("Payment successful:", response);
 
-            const verification = await verifyPayment({
+            await verifyPayment({
               bookingId,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
 
-            console.log("Payment verification:", verification);
+            toast.success("Booking confirmed successfully.");
+            navigate(`/bookings/${bookingId}`);
           } catch (error) {
             console.error("Payment verification failed:", error);
 
@@ -141,9 +143,27 @@ export default function BookingCard({ listing }) {
             );
           }
         },
+        modal: {
+          ondismiss: () => {
+            setError(
+              "Payment was cancelled. Your dates remain reserved temporarily; you can try again before the reservation expires.",
+            );
+          },
+        },
       };
 
+      if (!window.Razorpay) {
+        throw new Error("Payment service is unavailable. Please try again.");
+      }
+
       const razorpay = new window.Razorpay(options);
+
+      razorpay.on("payment.failed", (response) => {
+        setError(
+          response.error?.description ||
+            "Payment failed. Your temporary reservation is still available for retry.",
+        );
+      });
 
       razorpay.open();
     } catch (error) {

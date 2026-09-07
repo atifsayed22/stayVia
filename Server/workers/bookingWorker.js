@@ -9,6 +9,12 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("Connected to MongoDB");
 });
 
+const redisConnection = {
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: Number(process.env.REDIS_PORT || 6379),
+  password: process.env.REDIS_PASSWORD || undefined,
+};
+
 const worker = new Worker(
   "booking-expiration",
   async (job) => {
@@ -24,46 +30,37 @@ const worker = new Worker(
       return;
     }
 
-    console.log("Booking status:", booking.status);
-    console.log("Payment status:", booking.paymentStatus);
-
-    if (booking.status === "confirmed" &&  booking.paymentStatus === "paid") {
-      console.log("Booking already paid/confirmed. Nothing to do.");
-      return;
-    }
-
-    // Booking payment has not been completed, so we can expire the booking
-
     const session = await mongoose.startSession();
 
     try {
       await session.withTransaction(async () => {
-        // Delete reservation slots
-        await ReservationSlot.deleteMany(
+        const result = await Booking.updateOne(
           {
-            booking: booking._id,
+            _id: booking._id,
+            status: "pending",
+            paymentStatus: "pending",
+            expiresAt: { $lte: new Date() },
           },
-          {
-            session,
-          },
+          { $set: { status: "expired" } },
+          { session },
         );
 
-        // Mark booking as expired
-        booking.status = "expired";
-
-        await booking.save({ session });
+        if (result.modifiedCount === 1) {
+          await ReservationSlot.deleteMany(
+            { booking: booking._id },
+            { session },
+          );
+          console.log(`Booking ${bookingId} expired successfully`);
+        } else {
+          console.log(`Booking ${bookingId} was already completed or expired`);
+        }
       });
-
-      console.log(`Booking ${bookingId} expired successfully`);
     } finally {
       await session.endSession();
     }
   },
   {
-    connection: {
-      host: "127.0.0.1",
-      port: 6379,
-    },
+    connection: redisConnection,
   },
 );
 

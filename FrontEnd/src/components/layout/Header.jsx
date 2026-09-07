@@ -21,9 +21,17 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Logo />
+        <div className="flex items-center gap-2.5">
+          <Logo />
+          <span className="hidden rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-rose-600 sm:inline-flex">
+            Traveler
+          </span>
+        </div>
 
-        <DesktopNav getNavLinkClass={getNavLinkClass} />
+        <DesktopNav
+          getNavLinkClass={getNavLinkClass}
+          isAuthenticated={isAuthenticated}
+        />
 
         <UserMenu />
 

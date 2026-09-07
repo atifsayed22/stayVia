@@ -10,14 +10,12 @@ import BookingCard from "../components/listing-details/BookingCard";
 import ReviewSection from "../components/listing-details/ReviewSection";
 import LocationSection from "../components/listing-details/LocationSection";
 
+
 export default function ListingDetailsPage() {
   const { id } = useParams();
 
-  const {
-    listing,
-    loading,
-    error,
-  } = useListing(id);
+  
+  const { listing, loading, error } = useListing(id);
 
   if (loading) {
     return (
@@ -30,9 +28,7 @@ export default function ListingDetailsPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <h2 className="text-xl font-semibold text-red-600">
-          {error}
-        </h2>
+        <h2 className="text-xl font-semibold text-red-600">{error}</h2>
       </div>
     );
   }
@@ -43,11 +39,8 @@ export default function ListingDetailsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-
       <div className="grid gap-8 lg:grid-cols-[1.5fr_420px]">
-
         <section className="space-y-8">
-
           <ListingGallery listing={listing} />
 
           <ListingInfo listing={listing} />
@@ -59,17 +52,12 @@ export default function ListingDetailsPage() {
           <ReviewSection listingId={listing._id} />
 
           <LocationSection listing={listing} />
-
         </section>
 
         <aside>
-
           <BookingCard listing={listing} />
-
         </aside>
-
       </div>
-
     </div>
   );
 }

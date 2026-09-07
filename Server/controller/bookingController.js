@@ -46,9 +46,14 @@ module.exports.checkAvailability = async (req, res) => {
 
   const overlappingBooking = await Booking.findOne({
     listing: listingId,
-    status: {
-      $in: ["pending", "confirmed"],
-    },
+    $or: [
+      { status: "confirmed" },
+      {
+        status: "pending",
+        paymentStatus: "pending",
+        expiresAt: { $gt: new Date() },
+      },
+    ],
     checkIn: {
       $lt: requestedCheckOut,
     },
@@ -57,9 +62,18 @@ module.exports.checkAvailability = async (req, res) => {
     },
   });
 
+  const canRetryOwnBooking =
+    overlappingBooking &&
+    overlappingBooking.guest.equals(req.user._id) &&
+    overlappingBooking.status === "pending" &&
+    overlappingBooking.paymentStatus === "pending" &&
+    overlappingBooking.checkIn.getTime() === requestedCheckIn.getTime() &&
+    overlappingBooking.checkOut.getTime() === requestedCheckOut.getTime() &&
+    overlappingBooking.expiresAt > new Date();
+
   return res.status(200).json({
     success: true,
-    available: !overlappingBooking,
+    available: !overlappingBooking || canRetryOwnBooking,
   });
 };
 
@@ -105,15 +119,33 @@ module.exports.createBooking = async (req, res) => {
       success: false,
       message: "Listing not found",
     });
+  }
 
-    // 4 . validate guests
+  // 4 . validate guests
+  if (guests < 1 || guests > listing.maxGuests) {
+    return res.status(400).json({
+      success: false,
+      message: `This listing allows maximum ${listing.maxGuests} guests`,
+    });
+  }
 
-    if (guests < 1 || guests > listing.maxGuests) {
-      return res.status(400).json({
-        success: false,
-        message: `This listing allows maximum ${listing.maxGuests} guests`,
-      });
-    }
+  const existingPendingBooking = await Booking.findOne({
+    guest: req.user._id,
+    listing: listingId,
+    checkIn: requestedCheckIn,
+    checkOut: requestedCheckOut,
+    status: "pending",
+    paymentStatus: "pending",
+    expiresAt: { $gt: new Date() },
+  });
+
+  if (existingPendingBooking) {
+    return res.status(200).json({
+      success: true,
+      message: "Existing booking reservation can be paid again",
+      booking: existingPendingBooking,
+      reused: true,
+    });
   }
 
   // -----------------------------------------
@@ -146,6 +178,31 @@ module.exports.createBooking = async (req, res) => {
     let createdBooking;
 
     await session.withTransaction(async () => {
+      const expiredBookings = await Booking.find({
+        listing: listingId,
+        status: "pending",
+        paymentStatus: "pending",
+        expiresAt: { $lte: new Date() },
+        checkIn: { $lt: requestedCheckOut },
+        checkOut: { $gt: requestedCheckIn },
+      })
+        .select("_id")
+        .session(session);
+
+      const expiredBookingIds = expiredBookings.map((booking) => booking._id);
+
+      if (expiredBookingIds.length > 0) {
+        await ReservationSlot.deleteMany(
+          { booking: { $in: expiredBookingIds } },
+          { session },
+        );
+        await Booking.updateMany(
+          { _id: { $in: expiredBookingIds }, status: "pending" },
+          { $set: { status: "expired" } },
+          { session },
+        );
+      }
+
       // -----------------------------------------
       // Create booking
       // -----------------------------------------
@@ -232,6 +289,25 @@ module.exports.createBooking = async (req, res) => {
     // -----------------------------------------
 
     if (error.code === 11000) {
+      const retryableBooking = await Booking.findOne({
+        guest: req.user._id,
+        listing: listingId,
+        checkIn: requestedCheckIn,
+        checkOut: requestedCheckOut,
+        status: "pending",
+        paymentStatus: "pending",
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (retryableBooking) {
+        return res.status(200).json({
+          success: true,
+          message: "Existing booking reservation can be paid again",
+          booking: retryableBooking,
+          reused: true,
+        });
+      }
+
       return res.status(409).json({
         success: false,
         message: "These dates are no longer available",
@@ -250,29 +326,52 @@ module.exports.getUserBookings = async (req, res) => {
 
   const bookings = await Booking.find({
     guest,
-    paymentStatus: "paid",
-    status: {
-      $in: ["confirmed", "completed"],
-    },
+    $or: [
+      {
+        paymentStatus: "paid",
+        status: { $in: ["confirmed", "completed"] },
+      },
+      {
+        status: "pending",
+        paymentStatus: "pending",
+        expiresAt: { $gt: new Date() },
+      },
+    ],
   })
     .select(
-      "listing checkIn checkOut guests pricePerNight nights totalPrice status paymentStatus createdAt",
+      "listing checkIn checkOut guests pricePerNight nights totalPrice status paymentStatus paymentId expiresAt createdAt",
     )
     .populate("listing", "title images address")
     .sort({ createdAt: -1 });
 
-  if (!bookings || bookings.length === 0) {
-    return res.status(404).json({
-      success: false,
-      message: "No bookings found for this user",
-    });
-  }
-
-  console.log("Total bookings found for user:", bookings.length);
-
   return res.status(200).json({
     success: true,
     bookings,
+  });
+};
+
+// Get bookings for listings owned by the logged-in host
+module.exports.getHostBookings = async (req, res) => {
+  const bookings = await Booking.find({
+    paymentStatus: "paid",
+    status: { $in: ["confirmed", "completed"] },
+  })
+    .populate({
+      path: "listing",
+      match: { owner: req.user._id },
+      select: "title images address price",
+    })
+    .populate("guest", "username email")
+    .select(
+      "guest listing checkIn checkOut guests pricePerNight nights subtotal totalPrice status paymentStatus createdAt expiresAt",
+    )
+    .sort({ createdAt: -1 });
+
+  const hostBookings = bookings.filter((booking) => booking.listing);
+
+  return res.status(200).json({
+    success: true,
+    bookings: hostBookings,
   });
 };
 
@@ -290,7 +389,7 @@ module.exports.getBookingById = async(req ,res) =>{
     },
     paymentStatus: "paid",
   })    .select(
-      "listing checkIn checkOut guests pricePerNight nights subtotal totalPrice status paymentStatus createdAt"
+      "listing checkIn checkOut guests pricePerNight nights subtotal totalPrice status paymentStatus paymentId createdAt"
     )
     .populate(
       "listing",
