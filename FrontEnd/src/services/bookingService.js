@@ -34,8 +34,29 @@ const getHostBookings = async () => {
   return response.data.bookings;
 };
 
+const getHostBlockedDates = async () => {
+  console.log("getHostBlockedDates called");
+  const response = await API.get("/booking/host-blocked-dates");
+
+  return response.data.blockedDates;
+};
+
+const blockHostDate = async (listingId, date) => {
+  const response = await API.post("/booking/host-blocked-dates", {
+    listingId,
+    date,
+  });
+  return response.data.blockedDate;
+};
+
+const unblockHostDate = async (blockedDateId) => {
+  const response = await API.delete(`/booking/host-blocked-dates/${blockedDateId}`);
+  return response.data;
+};
+
 const getBookingById = async(bookingId) =>{
   const response = await API.get(`/booking/${bookingId}`);
+  console.log("getBookingById response : ", response?.data.booking);
   return response.data.booking;
 }
 
@@ -44,5 +65,8 @@ export {
     createBooking ,
     getUserBookings,
     getHostBookings,
+    getHostBlockedDates,
+    blockHostDate,
+    unblockHostDate,
     getBookingById
 }

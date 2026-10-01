@@ -23,5 +23,12 @@ router.post(
 router.post("/:bookingId/payment", protect, wrapAsync(payment.createOrder));
 router.get("/user-bookings", protect, wrapAsync(booking.getUserBookings));
 router.get("/host-bookings", protect, wrapAsync(booking.getHostBookings));
+router.get("/host-blocked-dates", protect, wrapAsync(booking.getHostBlockedDates));
+router.post("/host-blocked-dates", protect, wrapAsync(booking.blockHostDate));
+router.delete(
+  "/host-blocked-dates/:blockedDateId",
+  protect,
+  wrapAsync(booking.unblockHostDate),
+);
 router.get("/:bookingId", protect, wrapAsync(booking.getBookingById));
 module.exports = router;

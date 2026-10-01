@@ -1,6 +1,7 @@
 const Booking = require("../models/booking");
 const Listing = require("../models/listing");
 const ReservationSlot = require("../models/reservationSlot");
+const BlockedDate = require("../models/blockedDate");
 const bookingQueue = require("../queues/bookingQueue");
 const mongoose = require("mongoose");
 
@@ -62,6 +63,22 @@ module.exports.checkAvailability = async (req, res) => {
     },
   });
 
+  const blockedDate = await BlockedDate.exists({
+    listing: listingId,
+    date: {
+      $gte: new Date(Date.UTC(
+        requestedCheckIn.getUTCFullYear(),
+        requestedCheckIn.getUTCMonth(),
+        requestedCheckIn.getUTCDate(),
+      )),
+      $lt: new Date(Date.UTC(
+        requestedCheckOut.getUTCFullYear(),
+        requestedCheckOut.getUTCMonth(),
+        requestedCheckOut.getUTCDate(),
+      )),
+    },
+  });
+
   const canRetryOwnBooking =
     overlappingBooking &&
     overlappingBooking.guest.equals(req.user._id) &&
@@ -73,7 +90,7 @@ module.exports.checkAvailability = async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    available: !overlappingBooking || canRetryOwnBooking,
+    available: (!overlappingBooking || canRetryOwnBooking) && !blockedDate,
   });
 };
 
@@ -203,6 +220,28 @@ module.exports.createBooking = async (req, res) => {
         );
       }
 
+      const blockedDate = await BlockedDate.exists({
+        listing: listingId,
+        date: {
+          $gte: new Date(Date.UTC(
+            requestedCheckIn.getUTCFullYear(),
+            requestedCheckIn.getUTCMonth(),
+            requestedCheckIn.getUTCDate(),
+          )),
+          $lt: new Date(Date.UTC(
+            requestedCheckOut.getUTCFullYear(),
+            requestedCheckOut.getUTCMonth(),
+            requestedCheckOut.getUTCDate(),
+          )),
+        },
+      }).session(session);
+
+      if (blockedDate) {
+        const error = new Error("One or more selected dates are blocked by the host");
+        error.status = 409;
+        throw error;
+      }
+
       // -----------------------------------------
       // Create booking
       // -----------------------------------------
@@ -324,6 +363,8 @@ module.exports.createBooking = async (req, res) => {
 module.exports.getUserBookings = async (req, res) => {
   const guest = req.user._id;
 
+
+
   const bookings = await Booking.find({
     guest,
     $or: [
@@ -375,11 +416,105 @@ module.exports.getHostBookings = async (req, res) => {
   });
 };
 
+const parseBlockedDate = (value) => {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value
+    ? null
+    : date;
+};
+
+const getOwnedListing = (listingId, hostId) =>
+  Listing.findOne({ _id: listingId, owner: hostId }).select("_id");
+
+module.exports.getHostBlockedDates = async (req, res) => {
+  const filter = { };
+
+  if (req.query.listingId) {
+    const listing = await getOwnedListing(req.query.listingId, req.user._id);
+    if (!listing) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+    filter.listing = listing._id;
+  } else {
+    const listings = await Listing.find({ owner: req.user._id }).select("_id");
+    filter.listing = { $in: listings.map((listing) => listing._id) };
+  }
+
+  const blockedDates = await BlockedDate.find(filter)
+    .populate("listing", "title")
+    .sort({ date: 1 });
+
+  return res.status(200).json({ success: true, blockedDates });
+};
+
+module.exports.blockHostDate = async (req, res) => {
+  const { listingId, date: value } = req.body;
+  const date = parseBlockedDate(value);
+
+  if (!listingId || !date) {
+    return res.status(400).json({
+      success: false,
+      message: "A listing and a valid date are required",
+    });
+  }
+
+  const listing = await getOwnedListing(listingId, req.user._id);
+  if (!listing) {
+    return res.status(404).json({ success: false, message: "Listing not found" });
+  }
+
+  const occupiedDate = await ReservationSlot.exists({ listing: listingId, date });
+  if (occupiedDate) {
+    return res.status(409).json({
+      success: false,
+      message: "This date is already reserved and cannot be blocked",
+    });
+  }
+
+  try {
+    const blockedDate = await BlockedDate.create({ listing: listingId, date });
+    return res.status(201).json({ success: true, blockedDate });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "This date is already blocked",
+      });
+    }
+    throw error;
+  }
+};
+
+module.exports.unblockHostDate = async (req, res) => {
+  const blockedDate = await BlockedDate.findById(req.params.blockedDateId).populate(
+    "listing",
+    "owner",
+  );
+
+  if (!blockedDate || !blockedDate.listing.owner.equals(req.user._id)) {
+    return res.status(404).json({ success: false, message: "Blocked date not found" });
+  }
+
+  await blockedDate.deleteOne();
+  return res.status(200).json({ success: true, message: "Date unblocked" });
+};
+
 // get a specific booking by id for a user 
 
 module.exports.getBookingById = async(req ,res) =>{
   const { bookingId } = req.params;
   const guest = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(bookingId)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid booking id",
+    });
+  }
 
   const booking  = await Booking.findOne({
     _id: bookingId,
