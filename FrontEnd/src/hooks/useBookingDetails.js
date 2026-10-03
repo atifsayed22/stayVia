@@ -14,7 +14,7 @@ export function useBookingDetails(bookingId){
             setBooking(data) 
 
         }catch(err){
-            setError(err) ;
+            setError(err.response?.data?.message || "Unable to load Bookings") ;
         }finally{
             setLoading(false) ;
         }
