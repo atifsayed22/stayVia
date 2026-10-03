@@ -92,7 +92,6 @@ module.exports.createListing = async (req, res) => {
       filename: file.filename,
     }));
 
-    console.log("created listing data with images");
   }
 
   await listing.save();
@@ -136,7 +135,6 @@ module.exports.updateListing = async (req, res) => {
   Object.assign(listing, req.body);
 
   if (addressChanged) {
-    console.log("Addres Changed")
     const location = await geocodeAddress(req.body.address);
 
     if (!location) {

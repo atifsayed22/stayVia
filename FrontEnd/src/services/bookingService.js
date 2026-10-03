@@ -25,7 +25,6 @@ const createBooking = async ({ listingId, checkIn, checkOut, guests }) => {
 const getUserBookings = async ()=>{
 
   const response = await API.get("/booking/user-bookings");
-  console.log("getUserBookings response : ", response?.data.bookings);
   return response.data.bookings;
 }
 
@@ -35,7 +34,6 @@ const getHostBookings = async () => {
 };
 
 const getHostBlockedDates = async () => {
-  console.log("getHostBlockedDates called");
   const response = await API.get("/booking/host-blocked-dates");
 
   return response.data.blockedDates;
@@ -56,7 +54,6 @@ const unblockHostDate = async (blockedDateId) => {
 
 const getBookingById = async(bookingId) =>{
   const response = await API.get(`/booking/${bookingId}`);
-  console.log("getBookingById response : ", response?.data.booking);
   return response.data.booking;
 }
 

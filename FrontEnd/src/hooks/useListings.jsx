@@ -9,7 +9,6 @@ export function useListings() {
   const fetchListings = async () => {
     try {
       const data = await listingService.getListings();
-      console.log("Fetched listings:", data.listings); // Log the fetched listings for debugging
       setListings(data.listings);
    
     } catch (err) {

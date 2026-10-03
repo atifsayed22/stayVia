@@ -4,8 +4,6 @@ require("dotenv").config({
 const axios = require("axios");
 
 const geocodeAddress = async (address) => {
-  console.log("Geo Api Key : ")
-  console.log(process.env.GEOAPIFY_GEOCODING_API)
   const response = await axios.get(
     "https://api.geoapify.com/v1/geocode/search",
 
@@ -19,12 +17,10 @@ const geocodeAddress = async (address) => {
 
         limit: 1,
         format: "json",
-        apiKey: process.env.GEOAPIFY_GEOCODING_API,
+        apiKey: process.env.GEOAPIFY_API_KEY,
       },
     },
   );
-
-  console.log(response.data.results)
 
   const results = response.data.results;
 

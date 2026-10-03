@@ -55,9 +55,6 @@ module.exports.login = async (req, res, next) => {
 
     const user = await User.findOne({ username });
 
-    console.log("User found:", user);
-    console.log("Password provided:", password);
-
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -66,10 +63,7 @@ module.exports.login = async (req, res, next) => {
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
-    console.log("Password valid:", isValid);
-    
     if (!isValid) {
-      console.log("Invalid password");
       return res.status(401).json({
         success: false,
         message: "Invalid username or password",

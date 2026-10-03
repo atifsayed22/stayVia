@@ -124,8 +124,6 @@ export default function BookingCard({ listing }) {
 
         handler: async function (response) {
           try {
-            console.log("Payment successful:", response);
-
             await verifyPayment({
               bookingId,
               razorpay_order_id: response.razorpay_order_id,

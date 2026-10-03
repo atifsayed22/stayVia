@@ -23,9 +23,6 @@ export default function AuthPage({ mode }) {
     e.preventDefault();
     try {
       if (isLogin) {
-        // Log the form data for debugging
-
-        console.log("Form Data:", formData);
         await login({
           username: formData.username,
           password: formData.password,
@@ -35,7 +32,6 @@ export default function AuthPage({ mode }) {
         toast.success("Account Created Succesfully !")
       }
       navigate("/");
-      console.log("Success");
     } catch (error) {
       const message = error.response.data.message
       setError(message);

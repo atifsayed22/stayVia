@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+require("dotenv").config();
 
 const express = require("express");
 
@@ -19,6 +17,10 @@ const app = express();
 
 const PORT = process.env.PORT || 8080;
 const MONGO_URI = process.env.MONGO_URI;
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.post(
   "/payment/webhook",
@@ -34,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost:5173"],
+  origin: CORS_ORIGINS,
     credentials: true,
 }))
 /* =========================
@@ -61,9 +63,6 @@ app.use("/booking", bookingRoutes);
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Internal Server Error";
-
-  console.log("some error occured") 
-  console.log(err)
 
   res.status(status).json({
     success: false,

@@ -7,7 +7,6 @@ const signup = async (userData) => {
 
 const login = async (credentials) => {
   const response = await API.post("/auth/login", credentials);
-  console.log("Login response:", response.data.user);
   return response.data.user;
 };
 

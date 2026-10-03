@@ -15,8 +15,6 @@ export default function HostDashboardPage() {
   // -------------------------
 
   const totalListings = listings.length;
-  console.log("toatl listings" , totalListings)
-
   const publishedListings = listings.filter(
     (listing) => listing.status === "published"
   ).length;

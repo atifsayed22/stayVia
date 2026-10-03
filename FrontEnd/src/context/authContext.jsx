@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (data) => {
     const user = await authService.login(data);
-    console.log("Logged in user:", user);
     setUser(user);
   };
 
@@ -24,8 +23,6 @@ export const AuthProvider = ({ children }) => {
       return user
     } catch (err) {
       const message =  err?.response?.data?.message
-      console.log("Somme error in the signup ") ; 
-      console.log(message) ; 
       setError(true) ;
       throw err ; 
      

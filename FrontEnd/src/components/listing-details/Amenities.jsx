@@ -1,7 +1,5 @@
 export default function Amenities({ listing }) {
   const amenities = listing.amenities || [];
-  console.log("amenities :" , amenities)
-
   return (
     <section className="rounded-[2rem] bg-white p-6 shadow-sm">
       <h2 className="text-2xl font-semibold text-slate-900">

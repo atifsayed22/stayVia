@@ -88,7 +88,6 @@ export default function ListingFormPage({ mode = "create" }) {
         newImages: [],
       });
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -255,22 +254,15 @@ export default function ListingFormPage({ mode = "create" }) {
 
     submitData.append("status", formData.status);
 
-    // DEBUG
-    for (const [key, value] of submitData.entries()) {
-      console.log(key, value);
-    }
-
     try {
       setIsSubmitting(true);
       if (mode === "create") {
-        // console.log("id:", id);
         await toast.promise(listingService.createListing(submitData), {
           loading: "Creating listing...",
           success: "Listing Created successfully",
           error: "Failed to failed listing",
         });
       } else {
-        console.log("id:", id);
         await toast.promise(listingService.updateListing(id, submitData), {
           loading: "Updating listing...",
           success: "Listing updated successfully",

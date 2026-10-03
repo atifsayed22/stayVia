@@ -229,15 +229,16 @@ All protected endpoints require the JWT authentication cookie created during log
 
 ### Environment variables
 
-Create `Server/.env`:
+Create `Server/.env` by copying `Server/.env.example`. Set every placeholder to a real production value. Keep this file out of Git.
 
 ```env
-NODE_ENV=development
+NODE_ENV=production
 PORT=8080
-MONGO_URI=mongodb://127.0.0.1:27017/stayvia?replicaSet=rs0
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority
 JWT_SECRET=replace_with_a_long_random_secret
+CORS_ORIGINS=https://www.example.com
 
-CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_KEY=your_cloudinary_key
 CLOUDINARY_SECRET=your_cloudinary_secret
 GEOAPIFY_API_KEY=your_geoapify_key
@@ -246,17 +247,21 @@ RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 RAZORPAY_WEBHOOK_SECRET=your_razorpay_webhook_secret
 
-REDIS_HOST=127.0.0.1
+REDIS_HOST=your_managed_redis_host
 REDIS_PORT=6379
-REDIS_PASSWORD=
+REDIS_PASSWORD=your_redis_password
 ```
 
-Create `FrontEnd/.env`:
+Create `FrontEnd/.env` by copying `FrontEnd/.env.example`:
 
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=https://api.example.com
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
+
+`VITE_API_URL` is embedded into the frontend at build time. Set it to the public backend URL before running `npm run build`; changing it after deployment requires a new frontend build.
+
+The worker uses the same `Server/.env` as the backend. Start it with `npm run worker` from `Server`, or deploy it as a separate worker process with the same environment variables. In Docker Compose, `REDIS_HOST` must be `redis`; in production, use the hostname supplied by your managed Redis provider.
 
 ### Start the backend API
 

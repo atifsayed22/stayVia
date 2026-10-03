@@ -1,4 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const API_BASE_URL = import.meta.env.VITE_API_URL
+
+if (!API_BASE_URL) {
+  throw new Error('VITE_API_URL must be set when building the frontend')
+}
 
 async function fetchJsonOrThrow(url) {
   const response = await fetch(url, {

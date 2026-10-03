@@ -10,8 +10,6 @@ export function useListing(id) {
     const fetchListing = async () => {
       try {
         const data = await listingService.getListingById(id);
-        console.log("fetched listing : ",data.listing) ; 
-        
         setListing(data.listing);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load listing");
